@@ -1,10 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  const colors = [
-    { name: "kırmızı", hex: "#ef4444", image: "https://cdn-icons-png.freepik.com/256/8783/8783256.png" },
-    { name: "mavi", hex: "#3b82f6", image: "https://cdn-icons-png.freepik.com/256/8783/8783317.png" },
-    { name: "yeşil", hex: "#22c55e", image: "https://cdn-icons-png.freepik.com/256/8783/8783345.png" },
-    { name: "sarı", hex: "#facc15", image: "https://cdn-icons-png.freepik.com/256/8783/8783284.png" }
+  const colorItems = [
+    { name: "kırmızı", hex: "#ef4444", image: "https://cdn-icons-png.freepik.com/512/4151/4151071.png" }, // balon
+    { name: "mavi", hex: "#3b82f6", image: "https://cdn-icons-png.freepik.com/512/869/869869.png" }, // araba
+    { name: "yeşil", hex: "#22c55e", image: "https://cdn-icons-png.freepik.com/512/1556/1556327.png" }, // kurbağa
+    { name: "sarı", hex: "#facc15", image: "https://cdn-icons-png.freepik.com/512/477/477406.png" } // yıldız
   ];
 
   const img = document.getElementById("colorImage");
@@ -18,8 +18,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let confetti = [];
   let confettiActive = false;
+  let femaleVoice = null;
 
-  // Canvas boyutu
+  /* ========== Kadın sesi seçimi ========== */
+  function loadVoices() {
+    const voices = speechSynthesis.getVoices();
+    femaleVoice = voices.find(v => v.lang.startsWith("tr") && /female|kadın|zira/i.test(v.name.toLowerCase()))
+                  || voices.find(v => v.lang.startsWith("tr"))
+                  || voices[0];
+  }
+  loadVoices();
+  if (speechSynthesis.onvoiceschanged !== undefined) {
+    speechSynthesis.onvoiceschanged = loadVoices;
+  }
+
+  function speak(text) {
+    if (!text) return;
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = "tr-TR";
+    if (femaleVoice) utter.voice = femaleVoice;
+    utter.rate = 0.95;
+    utter.pitch = 1.1;
+    speechSynthesis.cancel(); // eski sesi kes
+    speechSynthesis.speak(utter);
+  }
+
+  /* ========== Konfeti ayarları ========== */
   function resizeCanvas() {
     confettiCanvas.width = window.innerWidth;
     confettiCanvas.height = window.innerHeight;
@@ -27,7 +51,6 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("resize", resizeCanvas);
   resizeCanvas();
 
-  // Konfeti oluştur
   function createConfetti() {
     confetti = [];
     for (let i = 0; i < 150; i++) {
@@ -72,20 +95,15 @@ document.addEventListener("DOMContentLoaded", () => {
     requestAnimationFrame(animateConfetti);
   }
 
+  /* ========== Yardımcı Ses Fonksiyonları ========== */
   function playSound(aud) {
     aud.currentTime = 0;
     aud.play();
   }
 
-  function speak(text) {
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = "tr-TR";
-    speechSynthesis.speak(utter);
-  }
-
-  // Yeni tur
+  /* ========== Yeni Soru ========== */
   function newRound() {
-    const target = colors[Math.floor(Math.random() * colors.length)];
+    const target = colorItems[Math.floor(Math.random() * colorItems.length)];
     question.textContent = "Bu nesnenin rengi ne?";
     speak("Bu nesnenin rengi ne?");
     img.src = target.image;
@@ -93,7 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
     img.dataset.answer = target.name;
     opts.innerHTML = "";
 
-    const shuffled = [...colors].sort(() => Math.random() - 0.5);
+    const shuffled = [...colorItems].sort(() => Math.random() - 0.5);
     shuffled.forEach(c => {
       const b = document.createElement("button");
       b.className = "option";
@@ -103,6 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  /* ========== Cevap Kontrol ========== */
   function checkAnswer(chosen, correct) {
     playSound(tap);
     if (chosen === correct) {

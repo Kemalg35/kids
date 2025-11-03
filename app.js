@@ -1,10 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
 
   const colorItems = [
-    { name: "kırmızı", hex: "#ef4444", image: "https://cdn-icons-png.freepik.com/512/4151/4151071.png" }, // balon
-    { name: "mavi", hex: "#3b82f6", image: "https://cdn-icons-png.freepik.com/512/869/869869.png" }, // araba
-    { name: "yeşil", hex: "#22c55e", image: "https://cdn-icons-png.freepik.com/512/1556/1556327.png" }, // kurbağa
-    { name: "sarı", hex: "#facc15", image: "https://cdn-icons-png.freepik.com/512/477/477406.png" } // yıldız
+    { name: "kırmızı", hex: "#ef4444", image: "https://cdn-icons-png.freepik.com/512/4151/4151071.png" }, // kırmızı balon
+    { name: "mavi", hex: "#3b82f6", image: "https://cdn-icons-png.freepik.com/512/869/869869.png" }, // mavi araba
+    { name: "yeşil", hex: "#22c55e", image: "https://cdn-icons-png.freepik.com/512/1556/1556327.png" }, // yeşil kurbağa
+    { name: "sarı", hex: "#facc15", image: "https://cdn-icons-png.freepik.com/512/477/477406.png" }  // sarı yıldız
   ];
 
   const img = document.getElementById("colorImage");
@@ -20,12 +20,14 @@ document.addEventListener("DOMContentLoaded", () => {
   let confettiActive = false;
   let femaleVoice = null;
 
-  /* ========== Kadın sesi seçimi ========== */
+  /* === Kadın sesi seçimi === */
   function loadVoices() {
     const voices = speechSynthesis.getVoices();
-    femaleVoice = voices.find(v => v.lang.startsWith("tr") && /female|kadın|zira/i.test(v.name.toLowerCase()))
-                  || voices.find(v => v.lang.startsWith("tr"))
-                  || voices[0];
+    femaleVoice =
+      voices.find(v => v.lang.startsWith("tr") && /female|kadın|zira/i.test(v.name.toLowerCase())) ||
+      voices.find(v => v.lang.startsWith("tr")) ||
+      voices.find(v => /female|woman/i.test(v.name.toLowerCase())) ||
+      voices[0];
   }
   loadVoices();
   if (speechSynthesis.onvoiceschanged !== undefined) {
@@ -37,13 +39,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const utter = new SpeechSynthesisUtterance(text);
     utter.lang = "tr-TR";
     if (femaleVoice) utter.voice = femaleVoice;
-    utter.rate = 0.95;
-    utter.pitch = 1.1;
-    speechSynthesis.cancel(); // eski sesi kes
+    utter.rate = 0.92;   // akıcılık
+    utter.pitch = 1.25;  // zarif tını
+    utter.volume = 1;
+    speechSynthesis.cancel();
     speechSynthesis.speak(utter);
   }
 
-  /* ========== Konfeti ayarları ========== */
+  /* === Konfeti ayarları === */
   function resizeCanvas() {
     confettiCanvas.width = window.innerWidth;
     confettiCanvas.height = window.innerHeight;
@@ -64,7 +67,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     confettiActive = true;
     requestAnimationFrame(animateConfetti);
-    // 2 saniye sonra temizle
     setTimeout(() => {
       confettiActive = false;
       ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
@@ -95,13 +97,12 @@ document.addEventListener("DOMContentLoaded", () => {
     requestAnimationFrame(animateConfetti);
   }
 
-  /* ========== Yardımcı Ses Fonksiyonları ========== */
   function playSound(aud) {
     aud.currentTime = 0;
     aud.play();
   }
 
-  /* ========== Yeni Soru ========== */
+  /* === Yeni tur === */
   function newRound() {
     const target = colorItems[Math.floor(Math.random() * colorItems.length)];
     question.textContent = "Bu nesnenin rengi ne?";
@@ -121,17 +122,16 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* ========== Cevap Kontrol ========== */
   function checkAnswer(chosen, correct) {
     playSound(tap);
     if (chosen === correct) {
       playSound(success);
-      speak("Bravo! Doğru bildin!");
+      speak("Aferin sana! Harika bildin!");
       createConfetti();
       setTimeout(newRound, 2200);
     } else {
       playSound(fail);
-      speak("Hadi bir daha dene!");
+      speak("Yanlış oldu, hadi bir daha dene.");
       img.classList.add("shake");
       setTimeout(() => img.classList.remove("shake"), 400);
     }

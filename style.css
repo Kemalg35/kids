@@ -1,51 +1,99 @@
-:root{
-  --brand:#1b4965; --bg:#f5f7fb; --card:#fff; --line:#e5e7eb; --muted:#6b7280;
-  --ok:#16a34a; --warn:#f59e0b;
+body {
+  margin: 0;
+  background: #f5f7fb;
+  color: #0f2740;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  text-align: center;
 }
-*{box-sizing:border-box} body{margin:0;background:var(--bg);color:#0f2740;
-  font-family:system-ui,"Segoe UI",Roboto,Arial,sans-serif;}
-.topbar{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--line);
-  padding:10px 14px;display:flex;justify-content:space-between;align-items:center}
-h1{margin:0;font-size:18px;color:var(--brand);font-weight:800}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:14px}
-.tile{padding:20px;border-radius:16px;background:var(--card);border:1px solid var(--line);
-  font-size:18px;text-align:center;cursor:pointer;box-shadow:0 1px 0 #00000010}
-.tile:active{transform:scale(.98)}
-.btn{appearance:none;border:1px solid var(--line);background:#fff;color:#0f2740;
-  padding:8px 14px;border-radius:12px;cursor:pointer}
-.btn.small{padding:6px 10px;font-size:12px}
-.btn.ghost{background:transparent}
-.bar{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);background:#fff}
-.screen{padding:14px}
-.hidden{display:none}
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
-label{display:block;font-size:14px;margin:8px 0}
-input,select{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff}
-.story{margin-top:10px;padding:12px;background:#fff;border:1px solid var(--line);border-radius:12px;line-height:1.5}
-.piano{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
-.key{padding:24px;border-radius:12px;background:#fff;border:1px solid var(--line)}
-.simon{display:grid;grid-template-columns:repeat(2,120px);gap:8px;justify-content:center;margin-top:12px}
-.pad{width:120px;height:120px;border-radius:16px;border:1px solid var(--line);background:#fff}
-.pad.active{outline:4px solid var(--brand)}
-.list{list-style:none;margin:0;padding:0}
-.list li{padding:10px 12px;margin:8px 0;background:#fff;border:1px solid var(--line);border-radius:10px}
-.mt8{margin-top:8px}
-.muted{color:var(--muted);font-size:12px}
-.row{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
+
+.topbar {
+  background: #1b4965;
+  color: #fff;
+  padding: 10px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 20px;
+}
 
 .tile {
+  padding: 30px 10px;
   font-size: 22px;
-  border: none;
-  color: white;
+  border-radius: 20px;
+  color: #fff;
   font-weight: 600;
+  border: none;
   box-shadow: 0 4px 8px #0002;
-  transition: transform .1s, box-shadow .1s;
+  transition: transform 0.1s, box-shadow 0.1s;
 }
-.tile:active { transform: scale(0.95); box-shadow: 0 1px 4px #0002; }
+
+.tile:active { transform: scale(0.95); }
+
 .tile:nth-child(1){background:#ef4444;}
 .tile:nth-child(2){background:#3b82f6;}
-.tile:nth-child(3){background:#22c55e;}
-.tile:nth-child(4){background:#f59e0b;}
-.tile:nth-child(5){background:#ec4899;}
-.tile:nth-child(6){background:#8b5cf6;}
+.tile:nth-child(3){background:#f59e0b;}
+.tile:nth-child(4){background:#10b981;}
 
+.btn {
+  padding: 10px 20px;
+  border: none;
+  background: #1b4965;
+  color: white;
+  border-radius: 12px;
+  font-size: 16px;
+  margin: 6px;
+}
+
+.screen { padding: 10px; }
+.hidden { display: none; }
+
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 10px;
+  margin: 10px auto;
+  width: 80%;
+  box-shadow: 0 2px 6px #0001;
+}
+
+.story { font-size: 16px; color: #222; }
+
+.simon {
+  display: grid;
+  grid-template-columns: repeat(2,100px);
+  justify-content: center;
+  gap: 10px;
+  margin: 20px auto;
+}
+
+.pad {
+  width: 100px;
+  height: 100px;
+  border-radius: 20px;
+  border: none;
+  background: #ddd;
+  transition: all 0.2s;
+}
+
+.pad.active { background: #1b4965; }
+
+.welcome {
+  position: fixed;
+  inset: 0;
+  background: #1b4965;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  animation: fadeOut 2s ease 2s forwards;
+}
+@keyframes fadeOut {
+  to { opacity: 0; visibility: hidden; }
+}

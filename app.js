@@ -1,13 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
-
   const COLORS = [
     { name: "kırmızı", hex: "#ef4444" },
     { name: "mavi", hex: "#3b82f6" },
     { name: "yeşil", hex: "#22c55e" },
     { name: "sarı", hex: "#facc15" },
-    { name: "siyah", hex: "#111" }
+    { name: "siyah", hex: "#111" },
   ];
-  const OBJECTS = ["balon","araba","elma","kurbağa","yıldız","uçurtma","çiçek"];
+  const OBJECTS = ["balon", "araba", "elma", "kurbağa", "yıldız", "uçurtma", "çiçek"];
 
   const img = document.getElementById("aiImage");
   const loading = document.querySelector(".loading");
@@ -23,23 +22,26 @@ document.addEventListener("DOMContentLoaded", () => {
   let confettiActive = false;
   let femaleVoice = null;
 
-  /* Ses seçimi */
+  /* Kadın sesi seçimi */
   function loadVoices() {
     const voices = speechSynthesis.getVoices();
     femaleVoice =
-      voices.find(v => v.lang.startsWith("tr") && /female|kadın/i.test(v.name.toLowerCase())) ||
-      voices.find(v => v.lang.startsWith("tr")) ||
+      voices.find((v) => v.lang.startsWith("tr") && /female|kadın/i.test(v.name.toLowerCase())) ||
+      voices.find((v) => v.lang.startsWith("tr")) ||
       voices[0];
   }
   loadVoices();
   if (speechSynthesis.onvoiceschanged !== undefined) speechSynthesis.onvoiceschanged = loadVoices;
 
   function speak(text) {
+    if (!text) return;
     const utter = new SpeechSynthesisUtterance(text);
     utter.lang = "tr-TR";
     if (femaleVoice) utter.voice = femaleVoice;
-    utter.rate = 0.92;
-    utter.pitch = 1.25;
+    utter.rate = 0.88; // daha yavaş, doğal
+    utter.pitch = 1.35; // daha ince ton
+    utter.volume = 1;
+    utter.text = text + " ";
     speechSynthesis.cancel();
     speechSynthesis.speak(utter);
   }
@@ -60,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
         y: Math.random() * -confettiCanvas.height,
         r: Math.random() * 6 + 2,
         c: `hsl(${Math.random() * 360},100%,60%)`,
-        s: Math.random() * 3 + 2
+        s: Math.random() * 3 + 2,
       });
     }
     confettiActive = true;
@@ -72,34 +74,53 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function drawConfetti() {
-    ctx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);
-    confetti.forEach(p=>{
+    ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+    confetti.forEach((p) => {
       ctx.beginPath();
-      ctx.arc(p.x,p.y,p.r,0,2*Math.PI);
-      ctx.fillStyle=p.c; ctx.fill();
+      ctx.arc(p.x, p.y, p.r, 0, 2 * Math.PI);
+      ctx.fillStyle = p.c;
+      ctx.fill();
     });
   }
+
   function updateConfetti() {
-    confetti.forEach(p=>{
+    confetti.forEach((p) => {
       p.y += p.s;
-      if(p.y > confettiCanvas.height) p.y = 0;
+      if (p.y > confettiCanvas.height) p.y = 0;
     });
   }
+
   function animateConfetti() {
-    if(!confettiActive) return;
-    drawConfetti(); updateConfetti();
+    if (!confettiActive) return;
+    drawConfetti();
+    updateConfetti();
     requestAnimationFrame(animateConfetti);
   }
 
-  function playSound(aud){ aud.currentTime=0; aud.play(); }
+  function playSound(aud) {
+    aud.currentTime = 0;
+    aud.play();
+  }
 
-  /* Simülasyon: sahte AI görseli */
+  /* Görsel oluşturucu (AI simülasyonu) */
   async function fakeAIImage(color, object) {
     loading.style.display = "block";
     img.style.display = "none";
-    await new Promise(r => setTimeout(r, 1500));
-    // Unsplash rastgele görsel
-    const url = `https://source.unsplash.com/300x300/?${color},${object},cartoon,kids`;
+
+    // 1,2 saniyelik yapay gecikme
+    await new Promise((r) => setTimeout(r, 1200));
+
+    const query = `${object},${color},cartoon`;
+    const url = `https://picsum.photos/seed/${encodeURIComponent(query)}/300/300`;
+
+    // Resmi önceden yükle
+    const newImg = new Image();
+    newImg.src = url;
+    await new Promise((resolve) => {
+      newImg.onload = resolve;
+      newImg.onerror = resolve;
+    });
+
     img.src = url;
     img.alt = `${color} ${object}`;
     img.dataset.answer = color;
@@ -107,18 +128,19 @@ document.addEventListener("DOMContentLoaded", () => {
     img.style.display = "block";
   }
 
+  /* Yeni tur */
   function newRound() {
     const color = COLORS[Math.floor(Math.random() * COLORS.length)];
     const object = OBJECTS[Math.floor(Math.random() * OBJECTS.length)];
     const correctColor = color.name;
 
-    q.textContent = `Bu ${object} hangi renkte acaba?`;
-    speak(`Hadi bakalım, bu ${object} hangi renkte sence?`);
+    q.textContent = `Bu ${object} hangi renkte olabilir sence?`;
+    speak(`Hmm, bir bakalım... Bu ${object} hangi renkte olabilir sence?`);
     fakeAIImage(correctColor, object);
 
     const options = COLORS.sort(() => Math.random() - 0.5);
     opts.innerHTML = "";
-    options.forEach(c => {
+    options.forEach((c) => {
       const b = document.createElement("button");
       b.className = "option";
       b.style.background = c.hex;
@@ -129,16 +151,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function checkAnswer(chosen, correct) {
     playSound(tap);
-    if(chosen === correct){
+    if (chosen === correct) {
       playSound(success);
       speak("Aferin sana! Harika bildin!");
       createConfetti();
       setTimeout(newRound, 2200);
     } else {
       playSound(fail);
-      speak("Yanlış oldu, bir daha dene bakalım!");
+      speak("Yanlış oldu, hadi bir daha dene!");
       img.classList.add("shake");
-      setTimeout(()=>img.classList.remove("shake"),400);
+      setTimeout(() => img.classList.remove("shake"), 400);
     }
   }
 

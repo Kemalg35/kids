@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Minik Atölye | Renkler • Sayılar • Masallar</title>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="stylesheet" href="./style.css" />
+  <meta name="theme-color" content="#1b4965" />
+</head>
+<body>
+<header class="topbar">
+  <h1>🎈 Minik Atölye</h1>
+  <div class="profile">
+    <button id="parentBtn" class="btn small">Ebeveyn</button>
+  </div>
+</header>
+
+<main id="app">
+  <section id="menu" class="grid">
+    <button class="tile" data-go="colors">🎨 Renkler</button>
+    <button class="tile" data-go="numbers">🔢 Sayılar</button>
+    <button class="tile" data-go="music">🎵 Müzik</button>
+    <button class="tile" data-go="story">📚 Masal</button>
+    <button class="tile" data-go="games">🎮 Mini Oyunlar</button>
+    <button class="tile" data-go="challenges">⭐ Haftalık Görev</button>
+  </section>
+
+  <!-- RENKLER -->
+  <section id="screen-colors" class="screen hidden">
+    <div class="bar">
+      <button class="btn back">&larr; Menü</button>
+      <h2>Renk Eşleştir</h2>
+    </div>
+    <div id="colors-wrap"></div>
+  </section>
+
+  <!-- SAYILAR -->
+  <section id="screen-numbers" class="screen hidden">
+    <div class="bar">
+      <button class="btn back">&larr; Menü</button>
+      <h2>Kaç Tane?</h2>
+    </div>
+    <div id="numbers-wrap"></div>
+  </section>
+
+  <!-- MÜZİK -->
+  <section id="screen-music" class="screen hidden">
+    <div class="bar">
+      <button class="btn back">&larr; Menü</button>
+      <h2>Mini Piyano</h2>
+    </div>
+    <div id="piano" class="piano">
+      <button class="key" data-f="261.63">Do</button>
+      <button class="key" data-f="293.66">Re</button>
+      <button class="key" data-f="329.63">Mi</button>
+      <button class="key" data-f="349.23">Fa</button>
+    </div>
+    <div class="mt8">
+      <button id="playRythm" class="btn">Ritim Tekrarla</button>
+      <span id="rythmStatus" class="muted"></span>
+    </div>
+  </section>
+
+  <!-- MASAL -->
+  <section id="screen-story" class="screen hidden">
+    <div class="bar">
+      <button class="btn back">&larr; Menü</button>
+      <h2>Hızlı Masal</h2>
+    </div>
+    <form id="storyForm" class="card">
+      <label>Karakter adı <input name="name" placeholder="Ada, Ali..." required></label>
+      <label>Mekan
+        <select name="place">
+          <option>orman</option><option>uzay</option><option>deniz</option><option>kasaba</option>
+        </select>
+      </label>
+      <label>Olay
+        <select name="event">
+          <option>kayıp oyuncağı bulma</option>
+          <option>yeni arkadaş edinme</option>
+          <option>cesaret gösterme</option>
+        </select>
+      </label>
+      <button class="btn" type="submit">Masal Oluştur</button>
+      <button type="button" id="ttsBtn" class="btn ghost">Sesli Oku</button>
+    </form>
+    <article id="storyOut" class="story"></article>
+  </section>
+
+  <!-- MİNİ OYUNLAR: Sırayı Hatırla -->
+  <section id="screen-games" class="screen hidden">
+    <div class="bar">
+      <button class="btn back">&larr; Menü</button>
+      <h2>Sırayı Hatırla</h2>
+    </div>
+    <div id="simon" class="simon">
+      <button class="pad" data-i="0"></button>
+      <button class="pad" data-i="1"></button>
+      <button class="pad" data-i="2"></button>
+      <button class="pad" data-i="3"></button>
+    </div>
+    <div class="mt8">
+      <button id="simonStart" class="btn">Başlat</button>
+      <span id="simonInfo" class="muted"></span>
+    </div>
+  </section>
+
+  <!-- GÖREVLER -->
+  <section id="screen-challenges" class="screen hidden">
+    <div class="bar">
+      <button class="btn back">&larr; Menü</button>
+      <h2>Bu Haftanın Görevleri</h2>
+    </div>
+    <ul id="challengeList" class="list"></ul>
+    <div class="mt8">
+      <button id="claimSticker" class="btn">Sticker Kazan 🎁</button>
+      <span id="stickerInfo" class="muted"></span>
+    </div>
+  </section>
+</main>
+
+<!-- EBEVEYN MODAL -->
+<dialog id="parentModal">
+  <form method="dialog" class="card">
+    <h3>Ebeveyn Alanı</h3>
+    <label>PIN <input id="pinInput" inputmode="numeric" maxlength="4" placeholder="1234"></label>
+    <div class="row">
+      <button class="btn ghost" value="cancel">Kapat</button>
+      <button class="btn" value="ok">Giriş</button>
+    </div>
+    <div id="parentArea" class="mt8 hidden">
+      <label>Günlük süre limiti (dk)
+        <input id="limitInput" type="number" min="5" step="5" value="15">
+      </label>
+      <button id="saveLimit" class="btn small">Kaydet</button>
+      <p class="muted" id="limitInfo"></p>
+    </div>
+  </form>
+</dialog>
+
+<script src="./app.js"></script>
+</body>
+</html>

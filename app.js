@@ -1,114 +1,98 @@
-document.addEventListener("DOMContentLoaded", ()=>{
+document.addEventListener("DOMContentLoaded", () => {
 
-  const tap = document.getElementById("tapSound");
-  const playTap = ()=>{ tap.currentTime=0; tap.play(); };
-
-  function qs(s){ return document.querySelector(s); }
-  function $$(s){ return [...document.querySelectorAll(s)]; }
-
-  // Menü geçişleri
-  $$(".tile").forEach(b=>{
-    b.addEventListener("click", ()=>{
-      playTap();
-      hideAll();
-      qs("#screen-"+b.dataset.go).classList.remove("hidden");
-    });
-  });
-  $$(".back").forEach(b=>{
-    b.addEventListener("click", ()=>{
-      playTap();
-      hideAll();
-      qs("#menu").classList.remove("hidden");
-    });
-  });
-
-  function hideAll(){
-    $$(".screen").forEach(s=>s.classList.add("hidden"));
-    qs("#menu").classList.add("hidden");
-  }
-
-  // --- RENKLER ---
-  const COLORS = [
-    {name:"kırmızı",hex:"#ef4444"},
-    {name:"mavi",hex:"#3b82f6"},
-    {name:"yeşil",hex:"#22c55e"},
-    {name:"sarı",hex:"#f59e0b"}
+  const colors = [
+    { name: "kırmızı", hex: "#ef4444", image: "https://cdn-icons-png.flaticon.com/512/728/728815.png" },
+    { name: "mavi", hex: "#3b82f6", image: "https://cdn-icons-png.flaticon.com/512/728/728821.png" },
+    { name: "yeşil", hex: "#22c55e", image: "https://cdn-icons-png.flaticon.com/512/728/728817.png" },
+    { name: "sarı", hex: "#f59e0b", image: "https://cdn-icons-png.flaticon.com/512/728/728819.png" }
   ];
-  function renderColors(){
-    const wrap = qs("#colors-wrap");
-    wrap.innerHTML = "";
-    const target = COLORS[Math.floor(Math.random()*COLORS.length)];
-    wrap.innerHTML = `<div class="card"><b>${target.name}</b> hangisi?</div>`;
-    COLORS.forEach(c=>{
-      const btn=document.createElement("button");
-      btn.className="btn";
-      btn.textContent=c.name;
-      btn.style.background=c.hex;
-      btn.style.color="#fff";
-      btn.onclick=()=>{
-        playTap();
-        if(c.name===target.name){
-          btn.style.border="4px solid #16a34a";
-          setTimeout(renderColors,600);
-        } else {
-          btn.style.border="4px solid #dc2626";
-        }
-      };
-      wrap.appendChild(btn);
-    });
+
+  const img = document.getElementById("colorImage");
+  const opts = document.getElementById("colorOptions");
+  const question = document.getElementById("question");
+  const tap = document.getElementById("tapSound");
+  const success = document.getElementById("successSound");
+  const fail = document.getElementById("failSound");
+  const confettiCanvas = document.getElementById("confettiCanvas");
+  const ctx = confettiCanvas.getContext("2d");
+
+  let confetti = [];
+
+  function resizeCanvas() {
+    confettiCanvas.width = window.innerWidth;
+    confettiCanvas.height = window.innerHeight;
   }
-  renderColors();
+  window.addEventListener("resize", resizeCanvas);
+  resizeCanvas();
 
-  // --- SAYILAR ---
-  function renderNumbers(){
-    const wrap=qs("#numbers-wrap");
-    wrap.innerHTML="";
-    const count=Math.floor(Math.random()*5)+2;
-    wrap.innerHTML=`<div class="card">${"⭐".repeat(count)}</div>`;
-    const input=document.createElement("input");
-    input.type="number"; input.placeholder="Kaç tane?";
-    const btn=document.createElement("button");
-    btn.textContent="Kontrol"; btn.className="btn";
-    btn.onclick=()=>{
-      playTap();
-      if(Number(input.value)===count) alert("Doğru!");
-      else alert("Yanlış!");
-      renderNumbers();
-    };
-    wrap.append(input,btn);
-  }
-  renderNumbers();
-
-  // --- MASAL ---
-  qs("#storyForm").addEventListener("submit", e=>{
-    e.preventDefault();
-    playTap();
-    const data=Object.fromEntries(new FormData(e.target).entries());
-    const out=`${data.name}, ${data.place}da ${data.event}. Cesaretini hiç kaybetmedi!`;
-    qs("#storyOut").textContent=out;
-  });
-  qs("#storyDraw").addEventListener("click", ()=>{
-    playTap();
-    alert("Bir sonraki sürümde masal çizimi eklenecek!");
-  });
-
-  // --- MİNİ OYUN ---
-  let seq=[], step=0;
-  qs("#simonStart").onclick=()=>{seq=[];next();};
-  function next(){seq.push(Math.floor(Math.random()*4));step=0;show();}
-  async function show(){
-    for(const i of seq){
-      const pad=$$(`.pad`)[i];
-      pad.classList.add("active");
-      await new Promise(r=>setTimeout(r,400));
-      pad.classList.remove("active");
-      await new Promise(r=>setTimeout(r,150));
+  function createConfetti() {
+    confetti = [];
+    for (let i = 0; i < 150; i++) {
+      confetti.push({
+        x: Math.random() * confettiCanvas.width,
+        y: Math.random() * confettiCanvas.height - confettiCanvas.height,
+        r: Math.random() * 6 + 2,
+        c: `hsl(${Math.random() * 360}, 100%, 60%)`,
+        s: Math.random() * 3 + 2
+      });
     }
   }
-  $$(".pad").forEach((p,i)=>p.onclick=()=>{
-    playTap();
-    if(i===seq[step]){step++;if(step===seq.length){alert("Bravo!");next();}}
-    else{alert("Olmadı!");seq=[];}
-  });
 
+  function drawConfetti() {
+    ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+    confetti.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, 2 * Math.PI);
+      ctx.fillStyle = p.c;
+      ctx.fill();
+    });
+  }
+
+  function updateConfetti() {
+    confetti.forEach(p => {
+      p.y += p.s;
+      if (p.y > confettiCanvas.height) p.y = 0;
+    });
+  }
+
+  function animateConfetti() {
+    drawConfetti();
+    updateConfetti();
+    if (confetti.length > 0) requestAnimationFrame(animateConfetti);
+  }
+
+  function playSound(aud) { aud.currentTime = 0; aud.play(); }
+
+  function newRound() {
+    const target = colors[Math.floor(Math.random() * colors.length)];
+    question.textContent = "Bu nesnenin rengi ne?";
+    img.src = target.image;
+    img.dataset.answer = target.name;
+    opts.innerHTML = "";
+
+    const shuffled = [...colors].sort(() => Math.random() - 0.5);
+    shuffled.forEach(c => {
+      const b = document.createElement("button");
+      b.className = "option";
+      b.style.background = c.hex;
+      b.onclick = () => checkAnswer(c.name, target.name);
+      opts.appendChild(b);
+    });
+  }
+
+  function checkAnswer(chosen, correct) {
+    playSound(tap);
+    if (chosen === correct) {
+      playSound(success);
+      createConfetti();
+      animateConfetti();
+      setTimeout(newRound, 1500);
+    } else {
+      playSound(fail);
+      img.classList.add("shake");
+      setTimeout(() => img.classList.remove("shake"), 400);
+    }
+  }
+
+  newRound();
 });

@@ -32,3 +32,20 @@ input,select{width:100%;padding:10px;border:1px solid var(--line);border-radius:
 .mt8{margin-top:8px}
 .muted{color:var(--muted);font-size:12px}
 .row{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
+
+.tile {
+  font-size: 22px;
+  border: none;
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 4px 8px #0002;
+  transition: transform .1s, box-shadow .1s;
+}
+.tile:active { transform: scale(0.95); box-shadow: 0 1px 4px #0002; }
+.tile:nth-child(1){background:#ef4444;}
+.tile:nth-child(2){background:#3b82f6;}
+.tile:nth-child(3){background:#22c55e;}
+.tile:nth-child(4){background:#f59e0b;}
+.tile:nth-child(5){background:#ec4899;}
+.tile:nth-child(6){background:#8b5cf6;}
+

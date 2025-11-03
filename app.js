@@ -114,7 +114,7 @@ function makeStory({name,place,event}){
 /* ============================== MİNİ OYUN ================================= */
 let simonSeq=[], simonStep=0, simonBusy=false;
 qs("#simonStart").onclick=()=>{ simonSeq=[]; nextSimon(); };
-$$(".pad").forEach(p=>p.onclick=()=>pressPad(Number(p.dataset.i))));
+$$(".pad").forEach(p=>p.onclick=()=>pressPad(Number(p.dataset.i)));
 function nextSimon(){
   simonSeq.push(Math.floor(Math.random()*4)); simonStep=0; playSeq();
 }
@@ -180,3 +180,4 @@ function getAgeBand(){ return localStorage.getItem("ageBand") || "5-7"; }
 if("serviceWorker" in navigator){
   window.addEventListener("load", ()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
 }
+

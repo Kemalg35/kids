@@ -7,30 +7,27 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-<div id="welcome" class="welcome">
-  <h1>🎈 Hoş geldin küçük kaşif!</h1>
-</div>
-
 <header class="topbar">
-  <h1>🎨 Renkleri Öğrenelim</h1>
+  <h1>🎨 Renk Oyunu</h1>
 </header>
 
 <main>
-  <section id="color-game" class="game">
-    <div id="question" class="question"></div>
-    <img id="colorImage" class="image" src="" alt="Soru görseli">
-    <div id="colorOptions" class="options"></div>
-  </section>
+  <div id="questionBox">
+    <p id="question">Hazırlanıyor...</p>
+  </div>
+  <div id="imageWrap">
+    <img id="aiImage" src="" alt="AI Görseli" />
+    <div class="loading">🌀 Yapay zekâ çiziyor...</div>
+  </div>
+  <div id="options" class="options"></div>
 </main>
+
+<canvas id="confettiCanvas"></canvas>
 
 <!-- Sesler -->
 <audio id="tapSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_6f4cc50e65.mp3?filename=button-press-81867.mp3"></audio>
 <audio id="successSound" src="https://cdn.pixabay.com/download/audio/2021/09/29/audio_2da84ab2be.mp3?filename=success-1-6297.mp3"></audio>
 <audio id="failSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_8a1ab4e91a.mp3?filename=error-126627.mp3"></audio>
-
-<!-- Konfeti -->
-<canvas id="confettiCanvas"></canvas>
 
 <script src="app.js"></script>
 </body>

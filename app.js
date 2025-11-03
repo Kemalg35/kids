@@ -29,7 +29,6 @@ const COLORS = [
   {name:"yeşil",hex:"#22c55e"},
   {name:"sarı",hex:"#f59e0b"}
 ];
-
 const NUMBERS_TASKS = [
   {asset:"🍎",count:3},
   {asset:"⭐",count:5},
@@ -37,7 +36,6 @@ const NUMBERS_TASKS = [
   {asset:"🍓",count:4},
   {asset:"🐦",count:6}
 ];
-
 const WEEK_CHALLENGE = [
   "3 masal oku/oluştur",
   "5 renk görevi tamamla",
@@ -45,17 +43,11 @@ const WEEK_CHALLENGE = [
   "1 ritim oyunu oyna"
 ];
 
-/* ===================== Router / Navigation ====================== */
-const menu = qs("#menu");
-
-$$(".tile").forEach(b => b.addEventListener("click", () => goScreen(b.dataset.go)));
-$$(".back").forEach(b => b.addEventListener("click", () => showMenu()));
-
+/* ===================== Ekran Geçişi / Router ====================== */
 function showMenu(){
   hideAll();
   qs("#menu").classList.remove("hidden");
 }
-
 function goScreen(name){
   hideAll();
   qs(`#screen-${name}`).classList.remove("hidden");
@@ -63,9 +55,8 @@ function goScreen(name){
   if(name==="numbers") renderNumbers();
   if(name==="challenges") renderChallenges();
 }
-
 function hideAll(){
-  $$(".screen").forEach(s => s.classList.add("hidden"));
+  document.querySelectorAll(".screen").forEach(s => s.classList.add("hidden"));
   qs("#menu").classList.add("hidden");
 }
 
@@ -95,10 +86,8 @@ function renderColors(){
     btn.style.color="#fff";
     btn.textContent=o.name.toUpperCase();
     btn.onclick=()=>{
-      if(o.name===target.name){
-        celebrate("Doğru!");
-        renderColors();
-      } else warn("Tekrar dene!");
+      if(o.name===target.name){ celebrate("Doğru!"); renderColors(); }
+      else warn("Tekrar dene!");
     };
     row.appendChild(btn);
   });
@@ -131,40 +120,15 @@ const audioCtx = new (window.AudioContext||window.webkitAudioContext)();
 function playTone(freq, dur=0.35){
   const o = audioCtx.createOscillator();
   const g = audioCtx.createGain();
-  o.type="sine";
-  o.frequency.value=freq;
-  o.connect(g);
-  g.connect(audioCtx.destination);
+  o.type="sine"; o.frequency.value=freq;
+  o.connect(g); g.connect(audioCtx.destination);
   g.gain.setValueAtTime(0.001, audioCtx.currentTime);
   g.gain.exponentialRampToValueAtTime(0.3, audioCtx.currentTime+0.02);
   g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+dur);
-  o.start();
-  o.stop(audioCtx.currentTime+dur);
+  o.start(); o.stop(audioCtx.currentTime+dur);
 }
-$$(".key").forEach(k=>k.onclick=()=>playTone(Number(k.dataset.f)));
-const pattern=[261.63,293.66,329.63,349.23]; // Do-Re-Mi-Fa
-qs("#playRythm").onclick=async ()=>{
-  qs("#rythmStatus").textContent="Dinle ve tekrarla";
-  for(const f of pattern){ playTone(f); await sleep(450); }
-  qs("#rythmStatus").textContent="Bitti";
-};
 
 /* ===================== MASAL ====================== */
-qs("#storyForm").addEventListener("submit", (e)=>{
-  e.preventDefault();
-  const data = Object.fromEntries(new FormData(e.target).entries());
-  const text = makeStory(data);
-  qs("#storyOut").textContent = text;
-});
-
-qs("#ttsBtn").onclick=()=>{
-  const t = qs("#storyOut").textContent.trim();
-  if(!t) return warn("Önce masalı oluştur.");
-  const u = new SpeechSynthesisUtterance(t);
-  u.lang="tr-TR";
-  speechSynthesis.speak(u);
-};
-
 function makeStory({name,place,event}){
   const ageBand = getAgeBand();
   const line1 = `${name} bugün ${place}da küçük bir maceraya çıktı.`;
@@ -176,22 +140,12 @@ function makeStory({name,place,event}){
   return `${line1} ${line2} ${line3} Ders: ${lesson}`;
 }
 
-/* ===================== MİNİ OYUN ====================== */
+/* ===================== SİMON MİNİ OYUN ====================== */
 let simonSeq=[], simonStep=0, simonBusy=false;
-qs("#simonStart").onclick=()=>{ simonSeq=[]; nextSimon(); };
-$$(".pad").forEach(p=>p.onclick=()=>pressPad(Number(p.dataset.i)));
-
-function nextSimon(){
-  simonSeq.push(Math.floor(Math.random()*4));
-  simonStep=0;
-  playSeq();
-}
-
 async function playSeq(){
-  simonBusy=true;
-  qs("#simonInfo").textContent=`Uzunluk: ${simonSeq.length}`;
+  simonBusy=true; qs("#simonInfo").textContent=`Uzunluk: ${simonSeq.length}`;
   for(const i of simonSeq){
-    const pad=$$(`.pad`)[i];
+    const pad=document.querySelectorAll(".pad")[i];
     pad.classList.add("active");
     playTone(220+80*i,0.25);
     await sleep(350);
@@ -200,52 +154,86 @@ async function playSeq(){
   }
   simonBusy=false;
 }
-
+function nextSimon(){ simonSeq.push(Math.floor(Math.random()*4)); simonStep=0; playSeq(); }
 function pressPad(i){
   if(simonBusy) return;
   const ok = simonSeq[simonStep]===i;
   if(!ok){ warn("Olmadı, tekrar!"); simonSeq=[]; return; }
-  simonStep++;
-  playTone(220+80*i,0.18);
+  simonStep++; playTone(220+80*i,0.18);
   if(simonStep===simonSeq.length){ celebrate("Harika!"); nextSimon(); }
 }
 
-/* ===================== GÖREV/STİCKER ====================== */
-function renderChallenges(){
-  const ul = qs("#challengeList");
-  ul.innerHTML="";
-  WEEK_CHALLENGE.forEach(c=>{
-    const li=document.createElement("li");
-    li.textContent=c;
-    ul.appendChild(li);
-  });
-}
-qs("#claimSticker").onclick=()=>{
-  const n = (Number(localStorage.getItem("stickers")||0))+1;
-  localStorage.setItem("stickers", String(n));
-  qs("#stickerInfo").textContent=`Toplam sticker: ${n}`;
-  celebrate("Sticker kazandın!");
-};
+/* ===================== BAĞLANTILAR: DOM YÜKLENDİĞİNDE ====================== */
+window.addEventListener("DOMContentLoaded", () => {
+  // Menü butonları
+  document.querySelectorAll(".tile").forEach(b =>
+    b.addEventListener("click", () => goScreen(b.dataset.go))
+  );
+  document.querySelectorAll(".back").forEach(b =>
+    b.addEventListener("click", () => showMenu())
+  );
 
-/* ===================== EBEVEYN ALANI ====================== */
-const parentModal = qs("#parentModal");
-qs("#parentBtn").onclick=()=>parentModal.showModal();
-parentModal.addEventListener("click", e=>{
-  if(e.target.value==="ok"){
-    qs("#parentArea").classList.remove("hidden");
+  // Müzik tuşları
+  document.querySelectorAll(".key").forEach(k =>
+    k.addEventListener("click", () => playTone(Number(k.dataset.f)))
+  );
+  qs("#playRythm").addEventListener("click", async ()=>{
+    qs("#rythmStatus").textContent="Dinle ve tekrarla";
+    for(const f of [261.63,293.66,329.63,349.23]){ playTone(f); await sleep(450); }
+    qs("#rythmStatus").textContent="Bitti";
+  });
+
+  // Masal formu
+  qs("#storyForm").addEventListener("submit",(e)=>{
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target).entries());
+    qs("#storyOut").textContent = makeStory(data);
+  });
+  qs("#ttsBtn").addEventListener("click", ()=>{
+    const t = qs("#storyOut").textContent.trim();
+    if(!t) return warn("Önce masalı oluştur.");
+    const u = new SpeechSynthesisUtterance(t);
+    u.lang="tr-TR"; speechSynthesis.speak(u);
+  });
+
+  // Simon
+  qs("#simonStart").addEventListener("click", ()=>{ simonSeq=[]; nextSimon(); });
+  document.querySelectorAll(".pad").forEach(p =>
+    p.addEventListener("click", ()=>pressPad(Number(p.dataset.i)))
+  );
+
+  // Görev/Stickers
+  function renderChallenges(){
+    const ul = qs("#challengeList"); ul.innerHTML="";
+    WEEK_CHALLENGE.forEach(c=>{ const li=document.createElement("li"); li.textContent=c; ul.appendChild(li); });
   }
+  renderChallenges();
+  qs("#claimSticker").addEventListener("click", ()=>{
+    const n = (Number(localStorage.getItem("stickers")||0))+1;
+    localStorage.setItem("stickers", String(n));
+    qs("#stickerInfo").textContent=`Toplam sticker: ${n}`;
+    celebrate("Sticker kazandın!");
+  });
+
+  // Ebeveyn
+  const parentModal = qs("#parentModal");
+  qs("#parentBtn").addEventListener("click", ()=>parentModal.showModal());
+  parentModal.addEventListener("click", e=>{
+    if(e.target.value==="ok"){ qs("#parentArea").classList.remove("hidden"); }
+  });
+  qs("#saveLimit").addEventListener("click",(e)=>{
+    e.preventDefault();
+    const v = Number(qs("#limitInput").value||15);
+    localStorage.setItem("dailyLimit", String(v));
+    qs("#limitInfo").textContent=`Günlük limit: ${v} dk`;
+    celebrate("Kaydedildi");
+  });
+
+  // Başlangıç
+  showMenu();
 });
-qs("#saveLimit").onclick=(e)=>{
-  e.preventDefault();
-  const v = Number(qs("#limitInput").value||15);
-  localStorage.setItem("dailyLimit", String(v));
-  qs("#limitInfo").textContent=`Günlük limit: ${v} dk`;
-  celebrate("Kaydedildi");
-};
 
 /* ===================== PWA ====================== */
 if("serviceWorker" in navigator){
-  window.addEventListener("load", ()=>{
-    navigator.serviceWorker.register("./sw.js").catch(()=>{});
-  });
+  window.addEventListener("load", ()=> navigator.serviceWorker.register("./sw.js").catch(()=>{}));
 }

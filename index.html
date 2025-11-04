@@ -1,156 +1,80 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Minik Atölye</title>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🎈 Minik Atölye</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header class="topbar">
   <h1>🎈 Minik Atölye</h1>
-  <div class="top-actions">
-    <button id="parentBtn" class="btn btn-light">👨‍👩‍👧‍👦 Ebeveyn</button>
-    <button id="badgesBtn" class="btn btn-light">🏆 Rozetler</button>
-  </div>
 </header>
 
 <main id="app">
-  <!-- MENÜ -->
-  <section id="menu" class="grid">
+  <!-- Ana Menü -->
+  <section id="menu" class="screen active fade">
     <button class="tile" data-go="colors">🎨 Renkler</button>
     <button class="tile" data-go="numbers">🔢 Sayılar</button>
-    <button class="tile" data-go="story">📚 Masal + Görsel (AI)</button>
+    <button class="tile" data-go="story">📚 Masal</button>
     <button class="tile" data-go="music">🎵 Ritim</button>
   </section>
 
-  <!-- RENKLER -->
-  <section id="screen-colors" class="screen hidden">
-    <div class="bar">
-      <button class="btn back">⬅ Menü</button>
-      <h2>Rengi Bul!</h2>
-    </div>
-    <div class="card center">
+  <!-- Renk Oyunu -->
+  <section id="screen-colors" class="screen fade">
+    <div class="bar"><button class="back">⬅ Menü</button><h2>Rengi Bul</h2></div>
+    <div class="game">
       <div id="color-visual" class="visual"></div>
-      <p id="color-question" class="q">Bu nesnenin rengi ne?</p>
+      <p id="color-question" class="q"></p>
       <div id="color-options" class="options"></div>
     </div>
   </section>
 
-  <!-- SAYILAR -->
-  <section id="screen-numbers" class="screen hidden">
-    <div class="bar">
-      <button class="btn back">⬅ Menü</button>
-      <h2>Kaç Tane?</h2>
-    </div>
-    <div class="card center">
+  <!-- Sayılar -->
+  <section id="screen-numbers" class="screen fade">
+    <div class="bar"><button class="back">⬅ Menü</button><h2>Kaç Tane?</h2></div>
+    <div class="game">
       <div id="numbers-visual" class="nums"></div>
       <div id="numbers-options" class="options"></div>
     </div>
   </section>
 
-  <!-- MASAL (AI kancalı) -->
-  <section id="screen-story" class="screen hidden">
-    <div class="bar">
-      <button class="btn back">⬅ Menü</button>
-      <h2>Masal Oluştur</h2>
-    </div>
-
-    <form id="storyForm" class="card form">
-      <div class="row">
-        <label>Karakter adı <input name="name" placeholder="Ada / Ali..." required></label>
-        <label>Mekan
-          <select name="place">
-            <option>orman</option><option>deniz</option><option>uzay</option><option>kasaba</option>
-          </select>
-        </label>
-        <label>Olay
-          <select name="event">
-            <option>kayıp oyuncağı bulma</option>
-            <option>yeni arkadaş edinme</option>
-            <option>cesaret gösterme</option>
-          </select>
-        </label>
-      </div>
-      <div class="row">
-        <button class="btn" type="submit">✍️ Masalı Yaz</button>
-        <button class="btn" type="button" id="storyDraw">🎨 Masalı Çiz (AI)</button>
-      </div>
+  <!-- Masal -->
+  <section id="screen-story" class="screen fade">
+    <div class="bar"><button class="back">⬅ Menü</button><h2>Masal Oluştur</h2></div>
+    <form id="storyForm" class="form">
+      <input name="name" placeholder="Karakter adı..." required>
+      <select name="place"><option>orman</option><option>deniz</option><option>uzay</option></select>
+      <select name="event"><option>kaybolmak</option><option>arkadaş bulmak</option><option>cesur davranmak</option></select>
+      <button type="submit">✍️ Masalı Yaz</button>
     </form>
-
-    <div class="card">
+    <div id="storyArea" class="storyArea">
       <div id="story-visual" class="visual visual--story"></div>
-      <p id="storyOut" class="story"></p>
-      <div class="row center">
-        <button id="ttsBtn" class="btn">🔊 Seslendir</button>
-        <button id="saveStoryBtn" class="btn btn-light">💾 Kaydet</button>
+      <p id="storyOut"></p>
+      <div class="row">
+        <button id="storyVoice">🔊 Seslendir</button>
+        <button id="storyDraw">🎨 Çiz (AI)</button>
       </div>
     </div>
   </section>
 
-  <!-- MÜZİK / RİTİM -->
-  <section id="screen-music" class="screen hidden">
-    <div class="bar">
-      <button class="btn back">⬅ Menü</button>
-      <h2>Ritmi Takip Et</h2>
-    </div>
-    <div class="card center">
-      <p id="rythmStatus" class="q">Hazır mısın? Dinle ve tekrar et.</p>
+  <!-- Müzik -->
+  <section id="screen-music" class="screen fade">
+    <div class="bar"><button class="back">⬅ Menü</button><h2>Ritim</h2></div>
+    <div class="music">
+      <p>Butonlara bas, notaları çal!</p>
       <div class="keys">
-        <button class="key" data-f="261.63">Do</button>
-        <button class="key" data-f="293.66">Re</button>
-        <button class="key" data-f="329.63">Mi</button>
-        <button class="key" data-f="349.23">Fa</button>
-      </div>
-      <div class="row center">
-        <button id="playRythm" class="btn">▶️ Dinlet</button>
+        <button data-f="261.63">Do</button>
+        <button data-f="293.66">Re</button>
+        <button data-f="329.63">Mi</button>
+        <button data-f="349.23">Fa</button>
       </div>
     </div>
   </section>
 </main>
 
-<!-- Konfeti -->
 <canvas id="confettiCanvas"></canvas>
 
-<!-- Ebeveyn Modal -->
-<dialog id="parentModal" class="modal">
-  <form method="dialog" class="card form">
-    <h3>Ebeveyn Ayarları</h3>
-    <label>Günlük süre limiti (dk)
-      <input id="limitInput" type="number" min="5" max="120" step="5" value="20">
-    </label>
-    <label>Yaş aralığı
-      <select id="ageBand">
-        <option value="2-4">2-4</option>
-        <option value="5-7" selected>5-7</option>
-        <option value="8-10">8-10</option>
-      </select>
-    </label>
-    <div class="row">
-      <button id="saveLimit" class="btn">Kaydet</button>
-      <button value="cancel" class="btn btn-light">Kapat</button>
-    </div>
-    <p id="limitInfo" class="muted"></p>
-  </form>
-</dialog>
-
-<!-- Rozet Modal -->
-<dialog id="badgesModal" class="modal">
-  <div class="card">
-    <h3>Haftalık Hedefler</h3>
-    <ul id="challengeList" class="list"></ul>
-    <div class="row">
-      <button id="claimSticker" class="btn">🌟 Görevi Tamamla</button>
-      <button id="resetSticker" class="btn btn-light">Sıfırla</button>
-    </div>
-    <p id="stickerInfo" class="muted"></p>
-    <div class="row center">
-      <button value="cancel" class="btn">Kapat</button>
-    </div>
-  </div>
-</dialog>
-
-<!-- Sesler -->
 <audio id="tapSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_6f4cc50e65.mp3?filename=button-press-81867.mp3"></audio>
 <audio id="successSound" src="https://cdn.pixabay.com/download/audio/2021/09/29/audio_2da84ab2be.mp3?filename=success-1-6297.mp3"></audio>
 <audio id="failSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_8a1ab4e91a.mp3?filename=error-126627.mp3"></audio>

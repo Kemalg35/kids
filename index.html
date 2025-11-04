@@ -1,30 +1,88 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🎨 Renk Oyunu | Minik Atölye</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Minik Atölye</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 <header class="topbar">
-  <h1>🎨 Renk Oyunu</h1>
+  <h1>🎈 Minik Atölye</h1>
 </header>
 
-<main>
-  <div id="questionBox">
-    <p id="question">Hazırlanıyor...</p>
-  </div>
-  <div id="imageWrap">
-    <img id="aiImage" src="" alt="AI Görseli" />
-    <div class="loading">🌀 Yapay zekâ çiziyor...</div>
-  </div>
-  <div id="options" class="options"></div>
+<main id="app">
+  <!-- MENÜ -->
+  <section id="menu" class="grid">
+    <button class="tile" data-go="colors">🎨 Renkler</button>
+    <button class="tile" data-go="numbers">🔢 Sayılar</button>
+    <button class="tile" data-go="story">📚 Masal</button>
+  </section>
+
+  <!-- RENKLER -->
+  <section id="screen-colors" class="screen hidden">
+    <div class="bar">
+      <button class="btn back">⬅ Menü</button>
+      <h2>Rengi Bul!</h2>
+    </div>
+    <div class="card center">
+      <div id="color-visual" class="visual"></div>
+      <p id="color-question" class="q">Bu nesnenin rengi ne?</p>
+      <div id="color-options" class="options"></div>
+    </div>
+  </section>
+
+  <!-- SAYILAR -->
+  <section id="screen-numbers" class="screen hidden">
+    <div class="bar">
+      <button class="btn back">⬅ Menü</button>
+      <h2>Kaç Tane?</h2>
+    </div>
+    <div class="card center">
+      <div id="numbers-visual" class="nums"></div>
+      <div id="numbers-options" class="options"></div>
+    </div>
+  </section>
+
+  <!-- MASAL (AI kancalı) -->
+  <section id="screen-story" class="screen hidden">
+    <div class="bar">
+      <button class="btn back">⬅ Menü</button>
+      <h2>Masal Oluştur</h2>
+    </div>
+    <form id="storyForm" class="card form">
+      <label>Karakter adı <input name="name" placeholder="Ada / Ali..." required></label>
+      <label>Mekan
+        <select name="place">
+          <option>orman</option><option>deniz</option><option>uzay</option><option>kasaba</option>
+        </select>
+      </label>
+      <label>Olay
+        <select name="event">
+          <option>kayıp oyuncağı bulma</option>
+          <option>yeni arkadaş edinme</option>
+          <option>cesaret gösterme</option>
+        </select>
+      </label>
+      <div class="row">
+        <button class="btn" type="submit">Masalı Yaz</button>
+        <button class="btn" type="button" id="storyDraw">🎨 Masalı Çiz (AI)</button>
+      </div>
+    </form>
+    <div class="card">
+      <div id="story-visual" class="visual visual--story"></div>
+      <p id="storyOut" class="story"></p>
+      <div class="row">
+        <button id="ttsBtn" class="btn">🔊 Seslendir</button>
+      </div>
+    </div>
+  </section>
 </main>
 
+<!-- Konfeti -->
 <canvas id="confettiCanvas"></canvas>
 
-<!-- Sesler -->
+<!-- Basit ses efektleri -->
 <audio id="tapSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_6f4cc50e65.mp3?filename=button-press-81867.mp3"></audio>
 <audio id="successSound" src="https://cdn.pixabay.com/download/audio/2021/09/29/audio_2da84ab2be.mp3?filename=success-1-6297.mp3"></audio>
 <audio id="failSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_8a1ab4e91a.mp3?filename=error-126627.mp3"></audio>

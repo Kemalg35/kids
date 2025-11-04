@@ -1,9 +1,9 @@
-const C = "minikatolye-v1";
+const C = "minik-atolye-v1";
 self.addEventListener("install", e=>{
-  e.waitUntil(
-    caches.open(C).then(c=>c.addAll(["./","./index.html","./style.css","./app.js"]))
-  );
+  e.waitUntil(caches.open(C).then(c=>c.addAll([
+    "./","./index.html","./style.css","./app.js"
+  ])));
 });
 self.addEventListener("fetch", e=>{
-  e.respondWith(caches.match(e.request).then(r=>r || fetch(e.request)));
+  e.respondWith(caches.match(e.request).then(r=> r || fetch(e.request)));
 });
